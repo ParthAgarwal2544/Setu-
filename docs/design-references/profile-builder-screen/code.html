@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+
+<html class="light" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Officer Competency Profile Builder - Setu MoSPI/NSSTA</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Geist:wght@400;500;600;700;900&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#ffdcc2",
+                      "surface-container-highest": "#e0e3e5",
+                      "surface-container-low": "#f2f4f6",
+                      "secondary": "#8f4e00",
+                      "on-surface-variant": "#44474e",
+                      "tertiary-fixed-dim": "#72de5c",
+                      "surface-dim": "#d8dadc",
+                      "primary-fixed-dim": "#aec7f6",
+                      "secondary-container": "#fe9832",
+                      "surface-container-lowest": "#ffffff",
+                      "inverse-on-surface": "#eff1f3",
+                      "on-primary": "#ffffff",
+                      "error-container": "#ffdad6",
+                      "on-primary-fixed": "#001b3d",
+                      "inverse-primary": "#aec7f6",
+                      "surface": "#f7f9fb",
+                      "primary-fixed": "#d6e3ff",
+                      "on-error": "#ffffff",
+                      "secondary-fixed-dim": "#ffb77a",
+                      "on-tertiary-container": "#309d22",
+                      "on-secondary-fixed-variant": "#6d3a00",
+                      "surface-variant": "#e0e3e5",
+                      "on-tertiary": "#ffffff",
+                      "surface-bright": "#f7f9fb",
+                      "on-secondary-container": "#683700",
+                      "on-primary-fixed-variant": "#2d476f",
+                      "tertiary-fixed": "#8dfc75",
+                      "surface-tint": "#465f88",
+                      "on-surface": "#191c1e",
+                      "error": "#ba1a1a",
+                      "inverse-surface": "#2d3133",
+                      "tertiary-container": "#012800",
+                      "on-background": "#191c1e",
+                      "tertiary": "#000e00",
+                      "on-tertiary-fixed-variant": "#035300",
+                      "primary-container": "#002147",
+                      "on-secondary": "#ffffff",
+                      "on-primary-container": "#708ab5",
+                      "on-secondary-fixed": "#2e1500",
+                      "surface-container": "#eceef0",
+                      "background": "#f7f9fb",
+                      "on-tertiary-fixed": "#012200",
+                      "outline": "#74777f",
+                      "surface-container-high": "#e6e8ea",
+                      "outline-variant": "#c4c6cf",
+                      "on-error-container": "#93000a",
+                      "primary": "#000a1e"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "sidebar-width": "280px",
+                      "sm": "8px",
+                      "lg": "24px",
+                      "xl": "40px",
+                      "base": "4px",
+                      "container-max": "1440px",
+                      "xs": "4px",
+                      "md": "16px"
+              },
+              "fontFamily": {
+                      "display-lg": ["Geist"],
+                      "label-sm": ["Geist"],
+                      "headline-md": ["Geist"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Geist"],
+                      "mono-data": ["JetBrains Mono"],
+                      "label-md": ["Geist"],
+                      "body-md": ["Inter"]
+              },
+              "fontSize": {
+                      "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "label-sm": ["12px", {"lineHeight": "16px", "fontWeight": "600"}],
+                      "headline-md": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                      "body-lg": ["18px", {"lineHeight": "28px", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                      "mono-data": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "label-md": ["14px", {"lineHeight": "20px", "letterSpacing": "0.02em", "fontWeight": "500"}],
+                      "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .ai-glow {
+            box-shadow: 0 0 15px rgba(99, 102, 241, 0.2);
+            border: 2px solid rgba(99, 102, 241, 0.5);
+        }
+        .form-input {
+            @apply w-full rounded-DEFAULT border-outline-variant bg-surface-container-lowest px-md py-sm font-body-md text-body-md text-on-surface focus:border-primary focus:ring-1 focus:ring-primary transition-colors;
+        }
+        .form-label {
+            @apply block mb-xs font-label-md text-label-md text-on-surface-variant;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-hidden flex h-screen">
+<!-- JSON Navigation Sidebar: Suppression Logic applied - this is a transactional flow (form builder), but requested by user, rendering based on instruction -->
+<nav class="hidden md:flex flex-col h-screen w-sidebar-width fixed left-0 top-0 py-lg bg-primary-container dark:bg-primary shadow-md dark:shadow-none border-r border-outline-variant dark:border-outline z-40">
+<div class="px-lg mb-xl flex items-center gap-md">
+<div class="w-10 h-10 rounded-lg bg-surface-container-lowest flex items-center justify-center">
+<img class="w-8 h-8 object-contain" data-alt="A minimalist logo for MoSPI, featuring a stylized geometric representation of a graph or chart in deep navy and white, corporate and authoritative." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAj-d34ls-7m7puYyAny--HkE5lWfnwJOeoCF5xxcwZYLAVqBOXDKoswrpFiu3iufv6os2E-_zjZ35UoI2P8gRH116AsKM6XnLt_FxVVOqk7bpn8z4zAcsyLMh-q-jiLCrK3giSbNQoNuDGN34ptaFTBAsLoOEB2XScEdtZM4QPSE-Gf2jvttvSq95RmJooxa4YjDzeTtAulYu5tPuBej5-gF5-50vY0iUzk99edst5X4CCXWQSD4uO"/>
+</div>
+<div>
+<h1 class="font-headline-md text-headline-md font-black text-on-primary-fixed">NSSTA Academy</h1>
+<p class="font-label-sm text-label-sm text-on-primary-container/70">AI-Powered Competency</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-sm flex flex-col gap-sm">
+<a class="text-on-primary-container/70 dark:text-on-primary-container/50 flex items-center gap-md px-md py-sm rounded-lg hover:bg-primary/20 dark:hover:bg-secondary-container/10 transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="dashboard">dashboard</span>
+<span class="font-label-md text-label-md">Dashboard</span>
+</a>
+<!-- Active State: "Competency Profile" -->
+<a class="bg-surface-container-highest/10 border-l-4 border-tertiary-fixed text-tertiary-fixed font-bold flex items-center gap-md px-md py-sm rounded-r-lg hover:bg-primary/20 dark:hover:bg-secondary-container/10 transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="analytics">analytics</span>
+<span class="font-label-md text-label-md">Competency Profile</span>
+</a>
+<a class="text-on-primary-container/70 dark:text-on-primary-container/50 flex items-center gap-md px-md py-sm rounded-lg hover:bg-primary/20 dark:hover:bg-secondary-container/10 transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="school">school</span>
+<span class="font-label-md text-label-md">Training &amp; Courses</span>
+</a>
+<a class="text-on-primary-container/70 dark:text-on-primary-container/50 flex items-center gap-md px-md py-sm rounded-lg hover:bg-primary/20 dark:hover:bg-secondary-container/10 transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="quiz">quiz</span>
+<span class="font-label-md text-label-md">Assessments</span>
+</a>
+</div>
+<div class="px-lg mt-auto mb-lg">
+<div class="bg-surface-container-highest/10 rounded-lg p-md border border-outline-variant/20 flex items-center gap-md">
+<span class="material-symbols-outlined text-primary-fixed-dim" data-icon="smart_toy">smart_toy</span>
+<span class="font-label-md text-label-md text-primary-fixed-dim">AI Co-pilot Active</span>
+</div>
+</div>
+<div class="border-t border-outline-variant/20 pt-sm px-sm flex flex-col gap-sm">
+<a class="text-on-primary-container/70 dark:text-on-primary-container/50 flex items-center gap-md px-md py-sm rounded-lg hover:bg-primary/20 dark:hover:bg-secondary-container/10 transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+<span class="font-label-md text-label-md">Settings</span>
+</a>
+<a class="text-on-primary-container/70 dark:text-on-primary-container/50 flex items-center gap-md px-md py-sm rounded-lg hover:bg-primary/20 dark:hover:bg-secondary-container/10 transition-all hover:translate-x-1 duration-200" href="#">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+<span class="font-label-md text-label-md">Help Support</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<div class="flex-1 ml-0 md:ml-sidebar-width flex flex-col h-screen overflow-hidden bg-background">
+<!-- JSON Top NavBar -->
+<header class="flex justify-between items-center w-full px-lg h-16 sticky top-0 z-30 bg-surface-bright dark:bg-surface-container-low border-b border-outline-variant dark:border-outline">
+<div class="flex items-center gap-xl">
+<span class="font-headline-lg text-headline-lg font-bold text-primary dark:text-primary-fixed">Setu MoSPI/NSSTA</span>
+<nav class="hidden lg:flex gap-lg">
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors px-md py-sm rounded-lg font-label-md text-label-md" href="#">Training Catalog</a>
+<!-- Active State mapped to Competency Profile -->
+<a class="text-primary dark:text-primary-fixed font-bold border-b-2 border-primary hover:bg-surface-container-high dark:hover:bg-surface-container-highest transition-colors px-md py-sm font-label-md text-label-md" href="#">Competency Map</a>
+</nav>
+</div>
+<div class="flex items-center gap-md">
+<button class="flex items-center gap-sm text-on-surface-variant hover:bg-surface-container-high px-md py-sm rounded-full transition-colors font-label-md text-label-md">
+                    Notifications
+                </button>
+<button class="w-10 h-10 rounded-full overflow-hidden border border-outline-variant focus:ring-2 focus:ring-primary focus:outline-none">
+<img class="w-full h-full object-cover" data-alt="A professional headshot of an Indian government officer in formal attire, neutral background, authoritative but approachable expression, soft natural lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuArmDqfv2lN1dn_91ua7DiJoLBhxBvmysnlDhko_gHYtm6Ed4Zetzbpa8W9YQMIU7x7pgsHfouYBYvKpHc2pABtX5J5w5AgP0YJCF-tCvzb1blMf9WgRYdiixLqh8eouvowysKJhxvMlgpj-XBsYl_6PotziASsS6j531pmnuO_3ACTA5-AXO20JIzKRYet13cPRmziXEqNaW87bkEOZEunoUH8CVKsqVKqhI-aoJBPAlO2FQ8ocL2R"/>
+</button>
+</div>
+</header>
+<!-- Form Builder Canvas -->
+<main class="flex-1 overflow-y-auto p-md md:p-lg flex flex-col lg:flex-row gap-lg">
+<!-- Left Side: Form Steps -->
+<div class="flex-1 flex flex-col gap-lg max-w-3xl">
+<!-- Header & Progress -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-lg shadow-sm">
+<h2 class="font-headline-md text-headline-md text-on-surface mb-sm">Build Competency Profile</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg">Complete your professional details to receive AI-driven training recommendations.</p>
+<div class="flex items-center gap-sm">
+<div class="flex-1 h-2 bg-primary-fixed rounded-full overflow-hidden">
+<div class="h-full bg-primary w-1/4 rounded-full transition-all duration-500"></div>
+</div>
+<span class="font-label-sm text-label-sm text-on-surface-variant whitespace-nowrap">Step 1 of 4</span>
+</div>
+</div>
+<!-- Step 1: Role & Department -->
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-lg shadow-sm">
+<div class="flex items-center gap-md mb-lg border-b border-surface-container-high pb-sm">
+<div class="w-8 h-8 rounded-full bg-primary text-on-primary flex items-center justify-center font-label-md text-label-md">1</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Role &amp; Department</h3>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-lg">
+<div>
+<label class="form-label">Current Designation</label>
+<select class="form-input">
+<option>Select Designation</option>
+<option>Joint Secretary</option>
+<option>Director</option>
+<option>Deputy Secretary</option>
+<option>Statistical Officer</option>
+</select>
+</div>
+<div>
+<label class="form-label">Ministry / Department</label>
+<select class="form-input">
+<option>Select Ministry</option>
+<option>MoSPI</option>
+<option>Ministry of Finance</option>
+<option>Ministry of Home Affairs</option>
+</select>
+</div>
+</div>
+</div>
+<!-- Action Bar -->
+<div class="flex justify-end gap-md pb-xl">
+<button class="px-lg py-sm rounded-DEFAULT border border-primary text-primary font-label-md text-label-md hover:bg-primary-fixed/20 transition-colors">
+                        Save Draft
+                    </button>
+<button class="px-lg py-sm rounded-DEFAULT bg-primary text-on-primary font-label-md text-label-md hover:bg-primary/90 transition-colors flex items-center gap-sm shadow-md">
+                        Next Step
+                        <span class="material-symbols-outlined" data-icon="arrow_forward">arrow_forward</span>
+</button>
+</div>
+</div>
+<!-- Right Side: AI Prediction Sidebar -->
+<div class="w-full lg:w-96 flex flex-col gap-lg">
+<div class="bg-surface-container-lowest rounded-xl border border-outline-variant p-lg sticky top-lg shadow-lg ai-glow">
+<div class="flex items-center gap-sm mb-lg">
+<span class="material-symbols-outlined text-[#6366F1]" data-icon="auto_awesome">auto_awesome</span>
+<h3 class="font-headline-md text-headline-md text-on-surface">AI Competency Prediction</h3>
+</div>
+<p class="font-body-md text-body-md text-on-surface-variant mb-lg">As you enter details, AI analyzes your profile against NSSTA frameworks.</p>
+<div class="space-y-md">
+<!-- Domain 1 -->
+<div>
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-md text-label-md text-on-surface">Data Literacy</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">Pending</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-surface-container-highest w-0 transition-all duration-300"></div>
+</div>
+</div>
+<!-- Domain 2 -->
+<div>
+<div class="flex justify-between items-center mb-xs">
+<span class="font-label-md text-label-md text-on-surface">Policy Analysis</span>
+<span class="font-mono-data text-mono-data text-on-surface-variant">Pending</span>
+</div>
+<div class="h-2 w-full bg-surface-container-high rounded-full overflow-hidden">
+<div class="h-full bg-surface-container-highest w-0 transition-all duration-300"></div>
+</div>
+</div>
+</div>
+<div class="mt-lg p-md bg-surface-bright border border-outline-variant/30 rounded-lg">
+<p class="font-label-sm text-label-sm text-on-surface-variant flex items-start gap-sm">
+<span class="material-symbols-outlined text-[16px]" data-icon="info">info</span>
+                            Complete Step 2 to generate initial gap analysis and predictive modeling.
+                        </p>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
