@@ -42,7 +42,7 @@ interface Nomination {
 }
 
 export default function TrainerAdminPage() {
-  const { user, logout } = useAuth();
+  const { user, session, logout } = useAuth();
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
   // Nomination Table State
@@ -163,6 +163,7 @@ export default function TrainerAdminPage() {
       const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
       const response = await fetch(`${apiUrl}/quiz/generate`, {
         method: "POST",
+        headers: session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {},
         body: formData,
       });
 

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import {
   Sparkles,
@@ -116,7 +116,7 @@ export function AiCopilotDrawer({ isOpen, onClose }: AiCopilotDrawerProps) {
 
   useEffect(() => {
     if (isOpen) {
-      fetchNudgesAndAudit();
+      Promise.resolve().then(() => fetchNudgesAndAudit());
     }
   }, [isOpen]);
 
@@ -132,12 +132,12 @@ export function AiCopilotDrawer({ isOpen, onClose }: AiCopilotDrawerProps) {
     }
   };
 
-  const handleSend = (textToSend?: string) => {
+  const handleSend = useCallback((textToSend?: string) => {
     const query = textToSend || inputText;
     if (!query.trim()) return;
 
     const userMsg: Message = {
-      id: Date.now().toString(),
+      id: `${Date.now()}-${Math.random()}`,
       sender: "user",
       text: query,
       timestamp: "Just now",
@@ -194,7 +194,7 @@ export function AiCopilotDrawer({ isOpen, onClose }: AiCopilotDrawerProps) {
       setMessages((prev) => [...prev, aiMsg]);
       setIsTyping(false);
     }, 700);
-  };
+  }, [inputText]);
 
   if (!isOpen) return null;
 

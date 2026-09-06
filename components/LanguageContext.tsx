@@ -291,25 +291,6 @@ const translations: Record<Language, Record<string, string>> = {
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: React.ReactNode }) {
-  const [language, setLanguageState] = useState<Language>("en");
-  const [fontSize, setFontSizeState] = useState<FontSize>("normal");
-
-  useEffect(() => {
-    // Restore language preference
-    const savedLang = localStorage.getItem("setu_language") as Language | null;
-    if (savedLang === "en" || savedLang === "hi") {
-      setLanguageState(savedLang);
-      document.documentElement.lang = savedLang;
-    }
-
-    // Restore font size preference
-    const savedFontSize = localStorage.getItem("setu_font_size") as FontSize | null;
-    if (savedFontSize === "small" || savedFontSize === "normal" || savedFontSize === "large") {
-      setFontSizeState(savedFontSize);
-      applyFontSize(savedFontSize);
-    }
-  }, []);
-
   const applyFontSize = (size: FontSize) => {
     if (size === "small") {
       document.documentElement.style.fontSize = "87.5%"; // 14px base
@@ -319,6 +300,23 @@ export function LanguageProvider({ children }: { children: React.ReactNode }) {
       document.documentElement.style.fontSize = "100%"; // 16px base
     }
   };
+
+  const [language, setLanguageState] = useState<Language>("en");
+  const [fontSize, setFontSizeState] = useState<FontSize>("normal");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const savedLang = localStorage.getItem("setu_language") as Language | null;
+      if (savedLang === "en" || savedLang === "hi") setLanguageState(savedLang);
+      const savedFontSize = localStorage.getItem("setu_font_size") as FontSize | null;
+      if (savedFontSize === "small" || savedFontSize === "normal" || savedFontSize === "large") setFontSizeState(savedFontSize);
+    }
+  }, []);
+
+  useEffect(() => {
+    document.documentElement.lang = language;
+    applyFontSize(fontSize);
+  }, [language, fontSize]);
 
   const setLanguage = (newLang: Language) => {
     setLanguageState(newLang);

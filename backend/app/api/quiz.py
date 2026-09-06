@@ -94,7 +94,7 @@ async def generate_quiz(
     gap_id: Optional[int] = Form(None),
     num_questions: int = Form(5),
     db: AsyncSession = Depends(get_db),
-    _user=Depends(require_roles(["Trainer", "Admin", "Officer"])),
+    _user=Depends(require_roles(["Trainer", "Admin"])),
 ):
     """
     FR3: Generate Adaptive Quiz from uploaded document (PDF, PPT) or video/transcript.

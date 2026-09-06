@@ -13,21 +13,21 @@ interface ThemeContextType {
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = useState<Theme>("light");
-  const [mounted, setMounted] = useState(false);
+  const [theme, setThemeState] = useState<Theme>(() => {
+    if (typeof window !== "undefined") {
+      const savedTheme = localStorage.getItem("setu_theme") as Theme | null;
+      if (savedTheme) return savedTheme;
+    }
+    return "light";
+  });
 
   useEffect(() => {
-    setMounted(true);
-    const savedTheme = localStorage.getItem("setu_theme") as Theme | null;
-    if (savedTheme) {
-      setThemeState(savedTheme);
-      if (savedTheme === "dark") {
-        document.documentElement.classList.add("dark");
-      } else {
-        document.documentElement.classList.remove("dark");
-      }
+    if (theme === "dark") {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
     }
-  }, []);
+  }, [theme]);
 
   const setTheme = (newTheme: Theme) => {
     setThemeState(newTheme);

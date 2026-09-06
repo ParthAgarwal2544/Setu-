@@ -17,6 +17,7 @@ import {
   Play,
   ArrowRight,
   RefreshCw,
+  Loader2,
 } from "lucide-react";
 
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
@@ -46,6 +47,7 @@ export default function CatalogPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [toastMessage, setToastMessage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [loadingCourseId, setLoadingCourseId] = useState<string | null>(null);
 
   const triggerToast = (msg: string) => {
     setToastMessage(msg);
@@ -85,9 +87,8 @@ export default function CatalogPage() {
   }, []);
 
   const handleEnrollOrNominate = async (course: Course) => {
-    setCourses((prev) =>
-      prev.map((c) => (c.id === course.id ? { ...c, enrolled: true } : c))
-    );
+    setLoadingCourseId(course.id);
+    const isNssta = course.source === "nssta" || course.nomination_required;
 
     try {
       const res = await axios.post(`${API_BASE_URL}/courses/${course.id}/enroll`, {
@@ -95,20 +96,44 @@ export default function CatalogPage() {
         action: "ENROLL",
       });
 
+      setCourses((prev) =>
+        prev.map((c) => (c.id === course.id ? { ...c, enrolled: true } : c))
+      );
+
       if (res.data && res.data.message) {
         triggerToast(res.data.message);
-      } else if (course.nomination_required || course.source === "nssta") {
+      } else if (isNssta) {
         triggerToast(`Nomination request for "${course.title}" submitted to NSSTA Council! Gap score updated.`);
       } else {
         triggerToast(`Enrolled in "${course.title}" on iGOT Karmayogi! Action loop updated gap score.`);
       }
     } catch (err) {
-      if (course.nomination_required || course.source === "nssta") {
+      setCourses((prev) =>
+        prev.map((c) => (c.id === course.id ? { ...c, enrolled: true } : c))
+      );
+      if (isNssta) {
         triggerToast(`Nomination request for "${course.title}" submitted to NSSTA Council!`);
       } else {
         triggerToast(`Successfully enrolled in "${course.title}" on iGOT Karmayogi!`);
       }
+    } finally {
+      setLoadingCourseId(null);
     }
+  };
+
+  const getCourseQuizCode = (course: Course): string => {
+    const t = (course.title || "").toLowerCase();
+    const id = (course.id || "").toLowerCase();
+
+    if (t.includes("financial") || t.includes("gfr") || t.includes("procurement") || id.includes("gfr")) return "FIN-GFR-2017";
+    if (t.includes("sample") || t.includes("sampling") || t.includes("survey") || t.includes("nsso") || t.includes("r programming") || id.includes("samp")) return "STAT-SAMP-2024";
+    if (t.includes("privacy") || t.includes("cyber") || t.includes("data protection") || t.includes("dpdpa") || id.includes("cyb") || id.includes("dpd")) return "GOV-CYB-2024";
+    if (t.includes("national accounts") || t.includes("gdp") || t.includes("macro") || id.includes("nas") || id.includes("sna")) return "MACRO-NAS-2024";
+    if (t.includes("vigilance") || t.includes("cvc") || t.includes("corruption") || t.includes("ccs") || id.includes("vig")) return "ADM-VIG-2023";
+    if (t.includes("rti") || t.includes("information") || t.includes("transparency") || id.includes("rti")) return "LEG-RTI-2005";
+    if (t.includes("spark") || t.includes("python") || t.includes("pyspark") || t.includes("sql") || t.includes("big data") || id.includes("tech")) return "TECH-PYSPARK-2024";
+
+    return "FIN-GFR-2017";
   };
 
   const filteredCourses = useMemo(() => {
@@ -363,7 +388,7 @@ export default function CatalogPage() {
                     {/* Action Buttons */}
                     <div className="mt-5 pt-4 border-t border-outline-variant/30 flex items-center justify-between gap-2">
                       <Link
-                        href="/assessment"
+                        href={`/assessment?course=${getCourseQuizCode(course)}`}
                         className="text-xs font-semibold text-on-surface-variant hover:text-primary transition-colors flex items-center gap-1"
                       >
                         <Play className="w-3 h-3" /> Pre-Quiz
@@ -371,14 +396,21 @@ export default function CatalogPage() {
 
                       <button
                         onClick={() => handleEnrollOrNominate(course)}
-                        disabled={course.enrolled}
+                        disabled={course.enrolled || loadingCourseId === course.id}
                         className={`px-4 py-2 rounded-lg text-xs font-bold transition-all flex items-center gap-1.5 shadow-xs ${
                           course.enrolled
-                            ? "bg-tertiary-fixed text-on-tertiary-fixed border border-tertiary-fixed-dim"
-                            : "bg-primary hover:bg-primary-container text-on-primary"
+                            ? "bg-tertiary-fixed text-on-tertiary-fixed border border-tertiary-fixed-dim cursor-not-allowed opacity-90"
+                            : loadingCourseId === course.id
+                            ? "bg-primary/80 text-on-primary cursor-wait"
+                            : "bg-primary hover:bg-primary-container text-on-primary cursor-pointer"
                         }`}
                       >
-                        {course.enrolled ? (
+                        {loadingCourseId === course.id ? (
+                          <>
+                            <Loader2 className="w-3.5 h-3.5 animate-spin text-on-primary" />
+                            Processing...
+                          </>
+                        ) : course.enrolled ? (
                           <>
                             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
                             {isNssta ? "Nominated" : "Enrolled"}

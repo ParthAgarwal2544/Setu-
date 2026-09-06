@@ -974,19 +974,9 @@ function AssessmentContent() {
   const [isDatasetIdFetched, setIsDatasetIdFetched] = useState<boolean>(false);
 
   // --- Statutory Exam State ---
-  const [currentIdx, setCurrentIdx] = useState(6);
-  const [answers, setAnswers] = useState<Record<number, string>>({
-    0: "C",
-    1: "B",
-    2: "B",
-    3: "B",
-    4: "B",
-    5: "B",
-    6: "B",
-  });
-  const [reviewed, setReviewed] = useState<Record<number, boolean>>({
-    5: true,
-  });
+  const [currentIdx, setCurrentIdx] = useState(0);
+  const [answers, setAnswers] = useState<Record<number, string>>({});
+  const [reviewed, setReviewed] = useState<Record<number, boolean>>({});
   const [timerSeconds, setTimerSeconds] = useState(28 * 60 + 45);
   const [showInstructions, setShowInstructions] = useState(false);
   const [showScorecard, setShowScorecard] = useState(false);
@@ -1021,18 +1011,30 @@ function AssessmentContent() {
     return () => clearInterval(timer);
   }, []);
 
-  // Update selected course if courseParam changes in URL
+  // Update selected course & launch course pre-quiz if courseParam changes in URL
   useEffect(() => {
     if (courseParam) {
       const target = PREFETCHED_COURSE_DATASETS.find(
         (c) =>
           c.id.toLowerCase() === courseParam.toLowerCase() ||
           c.code.toLowerCase() === courseParam.toLowerCase() ||
-          courseParam.toLowerCase().startsWith(c.code.toLowerCase())
-      );
+          courseParam.toLowerCase().startsWith(c.code.toLowerCase()) ||
+          c.code.toLowerCase().startsWith(courseParam.toLowerCase()) ||
+          c.title.toLowerCase().includes(courseParam.toLowerCase())
+      ) || PREFETCHED_COURSE_DATASETS[0];
+
       if (target) {
-        setSelectedCourseId(target.id);
-        setActiveTab("generator");
+        Promise.resolve().then(() => {
+          setSelectedCourseId(target.id);
+          setActiveTab("generator");
+          setActiveGeneratedQuiz(target.questions);
+          setGeneratedSourceTitle(`${target.code}: ${target.title}`);
+          setGeneratedDatasetId(target.datasetId);
+          setGenCurrentIdx(0);
+          setGenAnswers({});
+          setShowExplanation({});
+          setGenScorecard(null);
+        });
       }
     }
   }, [courseParam]);
@@ -1156,7 +1158,14 @@ function AssessmentContent() {
       if (res.ok) {
         const data = await res.json();
         if (data.questions && data.questions.length > 0) {
-          const formattedQuestions: QuestionData[] = data.questions.map((q: any, i: number) => ({
+          interface GeneratedQuestion {
+            bloom_level?: string;
+            difficulty?: string;
+            question_text: string;
+            options?: Array<{ id?: string; label?: string; text: string }>;
+            correct_answer?: string;
+          }
+          const formattedQuestions: QuestionData[] = data.questions.map((q: GeneratedQuestion, i: number) => ({
             id: i + 1,
             section: `Generated from ${data.source_material_id}`,
             category: q.bloom_level || "Psychometric Assessment",
@@ -1164,7 +1173,7 @@ function AssessmentContent() {
             marks: "+2.0",
             negative: "-0.5",
             questionText: q.question_text,
-            options: (q.options || []).map((opt: any) => ({
+            options: (q.options || []).map((opt: { id?: string; label?: string; text: string }) => ({
               key: opt.id || opt.label || "A",
               label: `Option ${opt.id || opt.label || "A"}`,
               text: opt.text,

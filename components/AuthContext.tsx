@@ -82,36 +82,52 @@ async function resolveUserFromSession(session: Session): Promise<User | null> {
 }
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
+  const [session, setSession] = useState<Session | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check if demo user is stored in localStorage
-    const storedDemo = typeof window !== "undefined" ? localStorage.getItem("setu_demo_user") : null;
-    if (storedDemo) {
-      try {
-        const parsed = JSON.parse(storedDemo) as User;
-        setUser(parsed);
-        setSession({
-          access_token: "mock-demo-access-token",
-          refresh_token: "mock-demo-refresh-token",
-          expires_in: 3600,
-          token_type: "bearer",
-          user: {
-            id: "00000000-0000-0000-0000-000000000001",
-            app_metadata: {},
-            user_metadata: { role: parsed.role },
-            aud: "authenticated",
-            created_at: new Date().toISOString(),
-            email: parsed.email,
-          } as any,
-        });
-        setIsLoading(false);
-        return;
-      } catch (err) {
-        localStorage.removeItem("setu_demo_user");
+    if (typeof window !== "undefined") {
+      const storedDemo = localStorage.getItem("setu_demo_user");
+      if (storedDemo) {
+        try {
+          const parsed = JSON.parse(storedDemo) as User;
+          const subMap: Record<string, string> = {
+            "priya.sharma@setudemo.local": "00000000-0000-0000-0000-000000000001",
+            "arjun.mehta@setudemo.local": "00000000-0000-0000-0000-000000000002",
+            "trainer.test@setudemo.local": "00000000-0000-0000-0000-000000000003",
+            "admin.test@setudemo.local": "00000000-0000-0000-0000-000000000004",
+          };
+          const demoSub = subMap[parsed.email] || "00000000-0000-0000-0000-000000000004";
+          const demoToken = `mock-demo-token:${parsed.role}:${parsed.email}:${demoSub}`;
+
+          setUser(parsed);
+          setSession({
+            access_token: demoToken,
+            refresh_token: "mock-demo-refresh-token",
+            expires_in: 3600,
+            token_type: "bearer",
+            user: {
+              id: demoSub,
+              app_metadata: {},
+              user_metadata: { role: parsed.role },
+              aud: "authenticated",
+              created_at: new Date().toISOString(),
+              email: parsed.email,
+            } as Session["user"],
+          });
+        } catch {
+          localStorage.removeItem("setu_demo_user");
+        }
       }
+      setIsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (user && session) {
+      setIsLoading(false);
+      return;
     }
 
     supabase.auth.getSession().then(async ({ data: { session } }) => {
@@ -127,6 +143,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } else if (!localStorage.getItem("setu_demo_user")) {
         setUser(null);
       }
+      setIsLoading(false);
     });
 
     return () => listener.subscription.unsubscribe();
@@ -143,21 +160,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (typeof window !== "undefined") {
       localStorage.setItem("setu_demo_user", JSON.stringify(demoUser));
     }
+    const subMap: Record<string, string> = {
+      "priya.sharma@setudemo.local": "00000000-0000-0000-0000-000000000001",
+      "arjun.mehta@setudemo.local": "00000000-0000-0000-0000-000000000002",
+      "trainer.test@setudemo.local": "00000000-0000-0000-0000-000000000003",
+      "admin.test@setudemo.local": "00000000-0000-0000-0000-000000000004",
+    };
+    const demoSub = subMap[demoUser.email] || "00000000-0000-0000-0000-000000000004";
+    const demoToken = `mock-demo-token:${demoUser.role}:${demoUser.email}:${demoSub}`;
+
     setUser(demoUser);
     setSession({
-      access_token: "mock-demo-access-token",
+      access_token: demoToken,
       refresh_token: "mock-demo-refresh-token",
       expires_in: 3600,
       token_type: "bearer",
       user: {
-        id: "00000000-0000-0000-0000-000000000001",
+        id: demoSub,
         app_metadata: {},
         user_metadata: { role: demoUser.role },
         aud: "authenticated",
         created_at: new Date().toISOString(),
         email: demoUser.email,
-      } as any,
+      } as Session["user"],
     });
+    setIsLoading(false);
   };
 
   const logout = async () => {

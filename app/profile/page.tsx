@@ -40,7 +40,7 @@ export default function ProfileTrainingPage() {
       progress: 65,
       status: "In Progress",
       actionType: "continue",
-      href: "/assessment",
+      href: "/assessment?course=FIN-GFR-2017",
     },
     {
       code: "GOI-VIG-104",
